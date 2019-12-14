@@ -1,0 +1,10 @@
+com\tc\App.class
+com\tc\RpcService.class
+com\tc\TcRpcServer.class
+com\tc\PaymentServiceImpl.class
+com\tc\ProcessorHandler.class
+com\tc\SpringConfig.class
+com\tc\HelloServiceImpl.class
+com\tc\HelloServiceImpl2.class
+com\tc\RpcProxyServer.class
+com\tc\RpcRequest.class
