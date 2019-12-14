@@ -6,9 +6,14 @@
 
   <groupId>com.tc.server.rpc</groupId>
   <artifactId>rpc-server</artifactId>
-  <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>rpc-server-api</module>
+        <module>rpc-server-provider</module>
+    </modules>
 
-  <name>rpc-server</name>
+    <name>rpc-server</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
