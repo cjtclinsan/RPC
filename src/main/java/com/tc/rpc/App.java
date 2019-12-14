@@ -1,16 +1,19 @@
 package com.tc.rpc;
 
+import com.tc.IHelloService;
+
 /**
  * Hello world!
  *
  */
 public class App {
     public static void main( String[] args ) {
-        IHelloService service = new HelloServiceImpl();
+        //动态代理
+        RpcProxyClient client = new RpcProxyClient();
+        IHelloService helloService =
+                client.clientProxy(IHelloService.class, "localhost", 8080);
+        String result = helloService.sayHello("tcc");
 
-        RpcServerProxy rpcServerProxy = new RpcServerProxy();
-
-        rpcServerProxy.publisher(service,8080);
-
+        System.out.println(result);
     }
 }
