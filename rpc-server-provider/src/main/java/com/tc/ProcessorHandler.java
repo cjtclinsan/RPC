@@ -1,11 +1,14 @@
 package com.tc;
 
+import org.springframework.util.StringUtils;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
+import java.util.Map;
 
 /**
  * @author taosh
@@ -13,11 +16,11 @@ import java.net.Socket;
  */
 public class ProcessorHandler implements Runnable{
     private Socket socket;
-    private Object service;
+    private Map<String, Object> serviceMap;
 
-    public ProcessorHandler(Object service, Socket socket) {
+    public ProcessorHandler( Socket socket, Map serviceMap) {
         this.socket = socket;
-        this.service = service;
+        this.serviceMap = serviceMap;
     }
 
     @Override
@@ -46,6 +49,8 @@ public class ProcessorHandler implements Runnable{
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if( in != null ){
                 try {
@@ -65,20 +70,40 @@ public class ProcessorHandler implements Runnable{
         }
     }
 
-    private Object invoke(RpcRequest rpcRequest) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private Object invoke(RpcRequest rpcRequest) throws Exception {
         //反射去拿到客户端请求的参数
-        Object[] args = rpcRequest.getParameters();
-        //获得每个参数的类型
-        Class<?>[] types = new Class[args.length];
-
-        for( int i = 0; i < args.length; i++ ){
-            types[i] = args[i].getClass();
+        String serviceName = rpcRequest.getClassName();
+        String version = rpcRequest.getVersion();
+        if( !StringUtils.isEmpty(version) ){
+            serviceName += "-"+version;
         }
 
-        //根据请求的类去加载
-        Class clazz = Class.forName(rpcRequest.getClassName());
-        //拿到方法  syaHello,saveUser等
-        Method method = clazz.getMethod(rpcRequest.getMethodName(), types);
+        Object service = serviceMap.get(serviceName);
+        if( service == null ){
+            throw new RuntimeException("service not fount:"+serviceName);
+        }
+
+        Object[] args = rpcRequest.getParameters();
+        Method method = null;
+        if(args != null){
+            //获得每个参数的类型
+            Class<?>[] types = new Class[args.length];
+
+            for( int i = 0; i < args.length; i++ ){
+                types[i] = args[i].getClass();
+            }
+
+            //根据请求的类去加载
+            Class clazz = Class.forName(rpcRequest.getClassName());
+            //拿到方法  syaHello,saveUser等
+            method = clazz.getMethod(rpcRequest.getMethodName(), types);
+        }else {
+            //根据请求的类去加载
+            Class clazz = Class.forName(rpcRequest.getClassName());
+            //拿到方法  syaHello,saveUser等
+            method = clazz.getMethod(rpcRequest.getMethodName());
+        }
+
         ////HelloServiceImpl  进行反射
         Object result = method.invoke(service,args);
         return result;
