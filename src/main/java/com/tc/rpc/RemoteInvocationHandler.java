@@ -1,6 +1,8 @@
 package com.tc.rpc;
 
 import com.tc.RpcRequest;
+import com.tc.rpc.discovery.IServiceDiscovery;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -10,12 +12,12 @@ import java.lang.reflect.Method;
  * @create 2019-12-14 16:01
  */
 public class RemoteInvocationHandler implements InvocationHandler {
-    private String host;
-    private int port;
+    private IServiceDiscovery serviceDiscovery;
+    private String version;
 
-    public RemoteInvocationHandler(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public RemoteInvocationHandler(IServiceDiscovery serviceDiscovery, String version) {
+        this.serviceDiscovery = serviceDiscovery;
+        this.version = version;
     }
 
     @Override
@@ -24,11 +26,19 @@ public class RemoteInvocationHandler implements InvocationHandler {
         RpcRequest rpcRequest = new RpcRequest();
         rpcRequest.setClassName(method.getDeclaringClass().getName());
         rpcRequest.setMethodName(method.getName());
+        rpcRequest.setParamTypes(method.getParameterTypes());
         rpcRequest.setParameters(args);
-        rpcRequest.setVersion("V2.0.0");
+        rpcRequest.setVersion(version);
+
+        String serviceName = rpcRequest.getClassName();
+        if(!StringUtils.isEmpty(version)){
+            serviceName = serviceName + "-" + version;
+        }
+
+        String serviceAddress = serviceDiscovery.discovery(serviceName);
 
         //远程通信
-        RpcNetTransport transport = new RpcNetTransport(host, port);
+        RpcNetTransport transport = new RpcNetTransport(serviceAddress);
         Object result = transport.send(rpcRequest);
 
         return result;

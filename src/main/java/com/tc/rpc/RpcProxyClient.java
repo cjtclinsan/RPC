@@ -1,5 +1,8 @@
 package com.tc.rpc;
 
+import com.tc.rpc.discovery.IServiceDiscovery;
+import com.tc.rpc.discovery.ServiceDiscoveryWithZk;
+
 import java.lang.reflect.Proxy;
 
 /**
@@ -7,9 +10,10 @@ import java.lang.reflect.Proxy;
  * @create 2019-12-14 15:59
  */
 public class RpcProxyClient {
+    private IServiceDiscovery serviceDiscovery = new ServiceDiscoveryWithZk();
 
-    public <T> T clientProxy(final Class<T> interfaceClass, final String host, final int port){
+    public <T> T clientProxy(final Class<T> interfaceClass, String version){
         return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(),
-                new Class<?>[]{interfaceClass}, new RemoteInvocationHandler(host, port));
+                new Class<?>[]{interfaceClass}, new RemoteInvocationHandler(serviceDiscovery, version));
     }
 }
