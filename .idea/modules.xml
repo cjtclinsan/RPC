@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/rpc-server-api/rpc-server-api.iml" filepath="$PROJECT_DIR$/rpc-server-api/rpc-server-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/rpc-server-provider/rpc-server-provider.iml" filepath="$PROJECT_DIR$/rpc-server-provider/rpc-server-provider.iml" />
       <module fileurl="file://$PROJECT_DIR$/rpcserver.iml" filepath="$PROJECT_DIR$/rpcserver.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rpc-server-api/rpcserverapi.iml" filepath="$PROJECT_DIR$/rpc-server-api/rpcserverapi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rpc-server-provider/rpcserverprovider.iml" filepath="$PROJECT_DIR$/rpc-server-provider/rpcserverprovider.iml" />
     </modules>
   </component>
 </project>
